@@ -346,7 +346,7 @@ try {
             }
         } catch(err) {
             console.error('dashboard.js: Error loading subjects:', err);
-            if (subjectsContainer) subjectsContainer.innerHTML = '<p>Error loading subjects. Please try again.</p>';
+            if (subjectsContainer) subjectsContainer.innerHTML = '<p>Error loading subjects. Please reload page.</p>';
         } finally {
             if (subjectsSpinner) showElementSpinner(subjectsSpinner, false);
         }
