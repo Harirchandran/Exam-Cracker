@@ -1,0 +1,180 @@
+/* css/login.css */
+
+body {
+    background-color: #f0f8ff; /* AliceBlue */
+    font-family: 'Arial', sans-serif; /* Changed from Comic Sans for better readability */
+    text-align: center;
+    margin: 0;
+    padding: 20px; /* Add some padding to the body */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh; /* Ensure body takes at least full viewport height */
+    box-sizing: border-box;
+  }
+  /* Offline Banner for Login Page */
+.network-banner {
+    background-color: #ffc107; /* Amber yellow */
+    color: #212529;
+    text-align: center;
+    padding: 10px;
+    font-weight: 500;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  
+  .container { /* Main content box for login and change password forms */
+    max-width: 450px; 
+    width: 100%;
+    margin: 20px auto; 
+    padding: 30px; 
+    background-color: #ffefd5; /* PapayaWhip */
+    border-radius: 12px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+  }
+  
+  h1 { /* "Exam Cracker Login" title */
+    color: #ff4500; /* OrangeRed */
+    margin-top: 0; /* Remove default top margin if .container is first */
+    margin-bottom: 25px;
+    font-size: 2em;
+  }
+  
+  h3 { /* "Change Your Password" title */
+      color: #D2691E; /* Chocolate color, consistent with dashboard subject titles */
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+  }
+  
+  input[type="text"], 
+  input[type="password"] {
+    width: calc(100% - 24px); /* Full width accounting for padding */
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid #ff8c69; /* Lighter Orange for border (LightSalmon) */
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  input[type="text"]:focus, 
+  input[type="password"]:focus {
+      border-color: #ff4500; /* Darker orange on focus */
+      outline: none;
+      box-shadow: 0 0 8px rgba(255, 69, 0, 0.3); /* Softer glow on focus */
+  }
+  
+  button {
+    padding: 12px 25px;
+    background-color: #ff4500; /* OrangeRed */
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    margin-top: 10px; /* Space above buttons */
+  }
+  button:hover {
+    background-color: #ff6347; /* Tomato */
+  }
+  button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+  }
+  
+  .spinner {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #ff4500; /* OrangeRed */
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  #loginForm {
+      margin-bottom: 15px; /* Space between login form and change password button */
+  }
+  
+  #changePasswordForm {
+    display: none; /* Hidden by default */
+    margin-top: 25px;
+    border-top: 1px solid #ffdab9; /* PeachPuff, lighter separator */
+    padding-top: 20px;
+  }
+  
+  #toggleChangePassword { /* The button to show/hide change password form */
+      background-color: #007bff; /* Blue for secondary action */
+      margin-top: 0; /* Reset margin as it's directly after login form elements */
+      font-size: 1em; /* Slightly smaller than primary action */
+      padding: 10px 20px;
+  }
+  #toggleChangePassword:hover {
+      background-color: #0056b3;
+  }
+  
+  /* Timer container styling */
+ 
+  
+  #examNote {
+    font-size: 0.9em;
+    color: #555; /* Darker grey for note */
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+      body {
+          padding: 10px; /* Less padding on small screens */
+      }
+      .container {
+          padding: 20px;
+          margin-top: 10px;
+      }
+      h1 {
+          font-size: 1.8em;
+          margin-bottom: 20px;
+      }
+      h3 {
+          font-size: 1.3em;
+      }
+      input[type="text"], 
+      input[type="password"] {
+          padding: 10px;
+          font-size: 0.95em;
+      }
+      button {
+          font-size: 1em;
+          padding: 10px 20px;
+      }
+      #toggleChangePassword {
+          font-size: 0.9em;
+          padding: 8px 15px;
+      }
+      #timerContainer {
+          padding: 10px;
+          margin-bottom: 20px;
+      }
+      #countdownTimer {
+          font-size: 1.3em;
+      }
+      #examNote {
+          font-size: 0.85em;
+      }
+  }
