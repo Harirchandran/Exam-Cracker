@@ -103,7 +103,7 @@ try {
 
     // --- COUNTDOWN TIMER ---
     function updateTimer() {
-      const examDate = new Date("May 31, 2025 00:00:00").getTime();
+      const examDate = new Date("May 30, 2025 00:00:00").getTime();
       const now = new Date().getTime();
       const timeRemaining = examDate - now;
       
