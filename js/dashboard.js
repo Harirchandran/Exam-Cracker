@@ -2,6 +2,8 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("dashboard.js: DOM fully loaded and parsed.");
+    history.replaceState({ dashboard: true }, '', window.location.pathname);
+
         // --- NETWORK STATUS HANDLING ---
         function updateNetworkBanner() {
             const banner = document.getElementById('networkStatusBanner');
@@ -75,6 +77,7 @@ try {
     const studentRoll = localStorage.getItem('roll');
     let studentName = '';
     let activeRealtimeSubscription = null;
+    let isTopicsOverlayOpenForHistory = false; 
 
     const welcomeMsgElement = document.getElementById('welcomeMsg');
     const subjectsContainer = document.getElementById('subjectsContainer');
@@ -93,6 +96,7 @@ try {
     const quizSubmitBtn = document.getElementById('quizSubmitBtn');
     const quizNextBtn = document.getElementById('quizNextBtn');
     const closeQuizBtn = document.getElementById('closeQuizBtn');
+    const MODULE_QUIZ_SCORE_INCREMENT = 10; // Add at the top of the file or near quiz logic
     let activeRealtimeDashboardSubscription = null;
 
     const countdownTimerElement = document.getElementById("countdownTimer");
@@ -253,13 +257,14 @@ try {
                         <ul>
                             <li>This quiz tests your overall knowledge in ${subjectName}.</li>
                             <li>Each time, questions are randomly selected.</li>
-                            <li>You have <strong>10 seconds</strong> for each question.</li>
+                            <li>one correct answer=10 points.</li>
+                            <li>You have <strong>20 seconds</strong> for each question.</li>
                             <li>Don't worry about initial scores; practice improves knowledge!</li>
                             <li>This quiz is designed to help you learn and identify areas for review.</li>
                             <li>There are many questions available. Compete on the leaderboard!</li>
                             <li><strong>Academic Integrity:</strong> Please do not use external resources (ChatGPT, Google, etc.) during the quiz.</li>
                         </ul>
-                        <p class="last-score-display">${lastScoreDisplay}</p>
+                        <h3><p class="last-score-display">${lastScoreDisplay}</p></h3>
                     </div>
     
                     <div id="sqQuizArea" class="sq-section" style="display: none;">
@@ -323,7 +328,7 @@ try {
                         </div>
                     </div>
                     <div class="subject-card-actions"> <!-- Wrapper for buttons -->
-                        <button class="see-topics-btn" data-subject-id="${subject.subject_id}" data-subject-name="${subject.subject_name}">See Topics</button>
+                        <button class="see-topics-btn" data-subject-id="${subject.subject_id}" data-subject-name="${subject.subject_name}">See syllabus-wise notes</button>
                         <button class="test-knowledge-btn" data-subject-id="${subject.subject_id}" data-subject-name="${subject.subject_name}">Test Your Knowledge</button>
                     </div>
                 `;
@@ -351,7 +356,7 @@ try {
     let sqQuestions = [];
     let sqCurrentQuestionIndex = 0;
     let sqUserScore = 0;
-    let sqTimeLeft = 10;
+    let sqTimeLeft = 20;
     let sqTimerInterval = null;
     let sqCurrentSubjectId = null;
     let sqCurrentSubjectName = null; // To pass to Try Again
@@ -432,7 +437,7 @@ try {
                 .eq('subject_id', subjectId);
             if (error) throw error;
             if (!data || data.length === 0) {
-                document.getElementById('sqQuestionText').textContent = 'No questions available for this subject yet.';
+                document.getElementById('sqQuestionText').textContent = 'No questions available for this subject yet. Hari is working hard to add questions, and will be soon added!!';
                 document.getElementById('sqOptionsContainer').innerHTML = '';
                 return;
             }
@@ -754,7 +759,7 @@ try {
     // --- UPLOAD LOGIC FOR MODULE NOTES (CALLED FROM MANAGER) ---
     async function handleModuleNoteUpload(triggerButton, subjectId, moduleNumber, subjectName, managerOverlayToClose) {
         const isReplacing = triggerButton.classList.contains('button-mn-replace');
-        const confirmMsg = `Uploading Module Note Rules:\n• Only PDF files are allowed.\n• Maximum file size is 2MB.\n• This note applies to the entire module.\n\nDo you want to proceed ${isReplacing ? 'with replacing the existing note' : 'with adding a new note'}?`;
+        const confirmMsg = `Uploading Module Note Rules:\n• Only PDF files are allowed.\n• Maximum file size is 10MB.\n• This note applies to the entire module.\n\nDo you want to proceed ${isReplacing ? 'with replacing the existing note' : 'with adding a new note'}?`;
         
         if (!confirm(confirmMsg)) return;
 
@@ -769,7 +774,7 @@ try {
             document.body.removeChild(fileInput);
             if (!file) return;
 
-            if (file.size > 2 * 1024 * 1024) { alert("File size exceeds 2MB."); return; }
+            if (file.size > 10 * 1024 * 1024) { alert("File size exceeds 10MB."); return; }
             if (file.type !== 'application/pdf') { alert("Only PDF files are allowed."); return; }
 
             const originalButtonText = triggerButton.textContent;
@@ -818,12 +823,28 @@ try {
         };
         fileInput.click();
     }
+    window.addEventListener('popstate', (event) => {
+        if (isTopicsOverlayOpenForHistory) {
+          console.log("Back button pressed - closing topics overlay");
+          closeTopicsOverlayFromHistory();
+          isTopicsOverlayOpenForHistory = false;
+          
+          // Replace with current state to prevent further back navigation
+          history.replaceState({ dashboard: true }, '', window.location.pathname);
+          return;
+        }
+        
+        // Remove the existing confirmation logic entirely
+        // Just let normal back navigation occur for other cases
+      });
+ 
+    
 
     // --- TOPICS OVERLAY (Main Rendering Function) ---
     async function openTopicsOverlay(subjectId, subjectName) { 
         if (!topicsOverlay || !topicsContentContainer || !topicsOverlayTitle) return;
 
-        topicsOverlayTitle.textContent = `${subjectName} - Topics`;
+        topicsOverlayTitle.textContent = `${subjectName} - Syllabus`;
         topicsContentContainer.innerHTML = '<span class="spinner" style="display:block; margin: 20px auto;"></span>';
         topicsOverlay.style.display = 'flex';
         topicsOverlay.dataset.currentSubjectId = subjectId;
@@ -892,7 +913,7 @@ try {
                             <h3>Module ${moduleNumberKey} - Completion: ${moduleCompleted.toFixed(2)}%</h3>
                             <div class="module-actions">
                                 ${moduleNoteManagerButtonHTML}
-                                <button class="start-quiz-btn" data-subject-id="${currentModule.subjectId}" data-module-number="${moduleNumberKey}" data-subject-name="${currentModule.subjectName}">Quiz Module ${moduleNumberKey}</button>
+                                <button class="start-quiz-btn" data-subject-id="${currentModule.subjectId}" data-module-number="${moduleNumberKey}" data-subject-name="${currentModule.subjectName}">Module ${moduleNumberKey} MCQ Practice</button>
                             </div>
                         </div>`;
 
@@ -916,7 +937,45 @@ try {
             console.error(`dashboard.js: Error loading topics for ${subjectName}:`, err);
             topicsContentContainer.innerHTML = `<p>Error loading content. Please try again.</p>`;
         }
+        if (topicsOverlay.style.display === 'flex') {
+            if (!isTopicsOverlayOpenForHistory) { // Push state only if not already pushed for this opening
+                history.pushState({ overlay: 'topicsOverlayActive' }, '', window.location.pathname + '#topicsOpen');
+                isTopicsOverlayOpenForHistory = true;
+                console.log("Topics overlay opened, pushed history state.");
+            }
+        }
+        
     }
+
+    function closeTopicsOverlayFromHistory(closedByButton = false) {
+        if (topicsOverlay) {
+          topicsOverlay.style.display = 'none';
+        }
+        
+        if (isTopicsOverlayOpenForHistory) {
+          isTopicsOverlayOpenForHistory = false;
+          
+          // Clean up the URL if needed
+          if (window.location.hash === "#topicsOpen") {
+            history.replaceState({ dashboard: true }, '', window.location.pathname);
+          }
+      
+          // Update subject card completion
+          const subjectId = topicsOverlay.dataset.currentSubjectId;
+          if (subjectId) {
+            updateSubjectCardCompletion(subjectId);
+          }
+          topicsOverlay.removeAttribute('data-current-subject-id');
+          topicsOverlay.removeAttribute('data-current-subject-name');
+        }
+      }
+    // Modify the backToSubjectsButton listener
+    if (backToSubjectsButton) {
+        backToSubjectsButton.addEventListener('click', function() {
+            closeTopicsOverlayFromHistory(true); // true indicates it was closed by a button
+        });
+    }
+
 
     // --- EVENT HANDLERS FOR TOPICS OVERLAY (Main Click/Change Delegator) ---
     if (topicsContentContainer) {
@@ -1191,7 +1250,7 @@ window.addEventListener('beforeunload', () => {
     const supabase = window.supabaseGlobalClient;
     const channel = window.myDashboardRealtimeChannel;
 
-    if (supabase && channel) {
+    if (supabase && channel && channel.subscription) {
         try {
             supabase.removeChannel(channel);
             console.log("dashboard.js: Realtime channel cleaned up on page unload.");
