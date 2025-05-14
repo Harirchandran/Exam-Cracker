@@ -94,6 +94,7 @@
     
       const a2hsBtn = document.getElementById('a2hsButton');
       if (a2hsBtn) a2hsBtn.style.display = 'inline-block';
+      setInterval(shakeA2HSButton, 5000);
     
       if (a2hsBtn) {
         a2hsBtn.addEventListener('click', () => {
@@ -110,6 +111,19 @@
         });
       }
     });
+    const a2hsButton = document.getElementById('a2hsButton');
+
+function shakeA2HSButton() {
+  if (!a2hsButton || a2hsButton.style.display === 'none') return;
+
+  a2hsButton.classList.add('shake');
+  setTimeout(() => {
+    a2hsButton.classList.remove('shake');
+  }, 500); // match duration of animation
+}
+
+// Start shaking every 5 seconds
+setInterval(shakeA2HSButton, 5000);
     </script>
     
   
