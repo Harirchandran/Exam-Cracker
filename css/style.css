@@ -1,93 +1,271 @@
-/* css/style.css - Global Styles for the Entire Application */
+/* General Body & Font Styling */
+:root {
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --background-color: #f4f7f6;
+    --card-background: #ffffff;
+    --text-color: #333;
+    --label-color: #555;
+    --border-color: #ddd;
+    --border-focus: #007bff;
+    --error-color: #d9534f;
+    --success-color: #5cb85c;
+    --shadow-color: rgba(0, 0, 0, 0.08);
+}
 
-/* Basic Reset/Normalize (optional, but can help with consistency) */
-html {
-    box-sizing: border-box; /* Apply border-box to all elements */
-    font-size: 16px; /* Base font size */
-    scroll-behavior: smooth; /* Smooth scrolling for anchor links */
-  }
-  
-  *, *:before, *:after {
-    box-sizing: inherit; /* Inherit border-box */
-  }
-  
-  body {
-    margin: 0; /* Remove default browser margin */
-    padding: 0; /* Remove default browser padding */
-    font-family: Arial, Helvetica, sans-serif; /* A generic, widely available sans-serif font */
-    line-height: 1.6; /* Default line height for readability */
-    color: #333; /* Default text color */
-    background-color: #f4f4f4; /* A very light grey default background if page-specific doesn't cover */
-  }
-  
-  /* Global Link Styling (optional) */
-  a {
-    color: #007bff; /* Standard blue for links */
-    text-decoration: none; /* Remove underline by default */
-  }
-  a:hover {
-    color: #0056b3; /* Darker blue on hover */
-    text-decoration: underline; /* Underline on hover for clarity */
-  }
-  
-  /* Global Image Styling (optional) */
-  img {
-    max-width: 100%; /* Ensure images are responsive by default */
-    height: auto; /* Maintain aspect ratio */
-    display: block; /* Remove extra space below images */
-  }
-  
-  /* Headings (optional default styling, can be overridden) */
-  h1, h2, h3, h4, h5, h6 {
-    margin-top: 1em; /* Default top margin */
-    margin-bottom: 0.5em; /* Default bottom margin */
-    font-weight: 600; /* A bit bolder than normal */
-  }
-  
-  /* Basic Button Styling (can be a base for more specific buttons) */
-  /* You have more specific button styling in page-specific CSS,
-     but this could be a very generic base if needed.
-     For now, your page-specific styles are quite comprehensive. */
-  /*
-  .button-global {
-    display: inline-block;
-    padding: 10px 15px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: white;
+body {
+    background-color: var(--background-color);
+    font-family: 'Poppins', 'Arial', sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Network Banner */
+.network-banner {
+    background-color: #ffc107;
+    color: #212529;
     text-align: center;
+    padding: 10px;
+    font-weight: 500;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Main Content Card */
+.card {
+    background-color: var(--card-background);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px var(--shadow-color);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    margin-top: 50px; /* Space for banner */
+}
+
+h1 {
+    font-size: 2em;
+    font-weight: 600;
+    margin: 0 0 10px;
+    color: var(--text-color);
+}
+
+.subtitle {
+    margin: 0 0 25px;
+    color: var(--label-color);
+}
+
+h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.9em;
+    color: var(--label-color);
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* Password Visibility Toggle */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    padding-right: 40px; /* Make space for the icon */
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-  }
-  .button-global:hover {
-    background-color: #0056b3;
-  }
-  */
-  
-  /* Basic container (optional, if you want a consistent max-width wrapper) */
-  /* Your .container class is defined in page-specific CSS, which is fine. */
-  /*
-  .global-container {
-    width: 90%;
-    max-width: 1100px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-  */
-  
-  /* Accessibility: Focus Visible (for keyboard navigation) */
-  /* This helps make focus states more apparent for keyboard users */
-  *:focus-visible {
-    outline: 2px dashed #007bff;
-    outline-offset: 2px;
-  }
-  
-  /* You can add more global styles or utility classes here as your project grows.
-     For example:
-     .text-center { text-align: center; }
-     .margin-bottom-small { margin-bottom: 0.5rem; }
-     .padding-small { padding: 0.5rem; }
-  */
+    user-select: none; /* Prevent text selection */
+    color: #999;
+}
+
+/* Button Styling */
+button {
+    padding: 12px 25px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Spinner Animation */
+.spinner {
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    border-top: 3px solid #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Toggle Link and Forms */
+.toggle-link {
+    margin: 20px 0;
+    font-size: 0.9em;
+}
+
+.toggle-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.toggle-link a:hover {
+    text-decoration: underline;
+}
+
+#changePasswordForm {
+    border-top: 1px solid var(--border-color);
+    padding-top: 25px;
+    margin-top: 20px;
+}
+
+/* Message Area Styling */
+#message-area {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    display: none; /* Hidden by default */
+    text-align: center;
+}
+
+#message-area.error {
+    background-color: #f2dede;
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+    display: block;
+}
+
+#message-area.success {
+    background-color: #dff0d8;
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+    display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    .card {
+        padding: 25px;
+        margin-top: 60px; /* Adjust for banner */
+    }
+    h1 {
+        font-size: 1.8em;
+    }
+}
+
+/* CSS for Contact Links */
+.contact-links {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: var(--label-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.contact-links a {
+    color: #555;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+}
+
+.contact-links i {
+    font-size: 1.8em;
+}
+
+/* Hover Effects for Social Icons */
+.contact-links a:hover {
+    transform: scale(1.15);
+}
+
+.contact-links a:hover .fa-linkedin {
+    color: #0A66C2;
+}
+
+.contact-links a:hover .fa-instagram {
+    color: #E1306C;
+}
