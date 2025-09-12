@@ -7,6 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
@@ -23,8 +26,8 @@
 
         <form id="loginForm" novalidate>
             <div class="input-group">
-                <label for="roll">Roll Number (Email)</label>
-                <input type="email" id="roll" placeholder="e.g., 202401@example.com" required autocomplete="username">
+                <label for="roll">Roll Number</label>
+                <input type="text" id="roll" placeholder="Enter your Roll Number" required autocomplete="username">
             </div>
             <div class="input-group">
                 <label for="password">Password</label>
@@ -46,8 +49,8 @@
         <form id="changePasswordForm" style="display: none;" novalidate>
             <h3>Change Your Password</h3>
             <div class="input-group">
-                <label for="rollChange">Roll Number (Email)</label>
-                <input type="email" id="rollChange" placeholder="e.g., 202401@example.com" required autocomplete="username">
+                <label for="rollChange">Roll Number</label>
+                <input type="text" id="rollChange" placeholder="Enter your Roll Number" required autocomplete="username">
             </div>
             <div class="input-group">
                 <label for="oldPassword">Current Password</label>
@@ -68,11 +71,22 @@
                  <span class="spinner" style="display:none;"></span>
             </button>
         </form>
-         <p class="contact-info">Trouble logging in? Contact Hari R Chandran!</p>
+        
+        <div class="contact-links">
+            <span>Contact Hari R Chandran:</span>
+            <a href="https://www.linkedin.com/in/hari-r-chandran-650a02358" target="_blank" rel="noopener noreferrer" aria-label="Hari R Chandran's LinkedIn Profile">
+                <i class="fa-brands fa-linkedin"></i>
+            </a>
+            <a href="https://www.instagram.com/hari_r_c/" target="_blank" rel="noopener noreferrer" aria-label="Hari R Chandran's Instagram Profile">
+                <i class="fa-brands fa-instagram"></i>
+            </a>
+        </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script src="js/supabase-client.js"></script>
+
     <script src="js/login.js"></script>
 </body>
 </html>
