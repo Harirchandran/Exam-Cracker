@@ -1,32 +1,29 @@
-// js/login.js
-
-// Wait for the DOM to be fully loaded before running scripts
 document.addEventListener('DOMContentLoaded', () => {
     console.log("login.js: DOM fully loaded and parsed.");
+
     // --- AUTO-REDIRECT IF ALREADY LOGGED IN ---
-
-    const storedRollForRedirect = localStorage.getItem('roll');
-    if (storedRollForRedirect) {
-        console.log("login.js: User already logged in (roll found in localStorage). Redirecting to dashboard.");
+    if (localStorage.getItem('roll')) {
+        console.log("User already logged in. Redirecting to dashboard.");
         window.location.href = 'dashboard.html';
-        return; // Stop further execution of login page scripts if redirecting
+        return;
     }
-    // If not redirected, proceed with login page setup:
 
-    // Access the global Supabase client instance
+    // --- SUPABASE CLIENT SETUP ---
     const supabase = window.supabaseGlobalClient;
-
     if (!supabase) {
-        console.error("login.js: Global Supabase client (window.supabaseGlobalClient) is not available. Halting script.");
-        alert("A critical error occurred (Supabase client not found). Please refresh or contact support.");
-        return; // Stop execution if Supabase client isn't there
+        console.error("Supabase client is not available.");
+        displayMessage("A critical error occurred. Please refresh.", 'error');
+        return;
     }
-    console.log("login.js: Supabase client obtained successfully.");
-    
+    console.log("Supabase client obtained successfully.");
 
-    // Get DOM elements
+    // --- DOM ELEMENT REFERENCES ---
+    const messageArea = document.getElementById('message-area');
+    // FIXED: Banner ID mismatch corrected
+    const networkBanner = document.getElementById('network-banner');
+
     const loginForm = document.getElementById('loginForm');
-    const loginButton = document.getElementById('loginButton'); // Make sure your login button has id="loginButton"
+    const loginButton = document.getElementById('loginButton');
     const loginSpinner = document.getElementById('loginSpinner');
     const rollInput = document.getElementById('roll');
     const passwordInput = document.getElementById('password');
@@ -37,163 +34,178 @@ document.addEventListener('DOMContentLoaded', () => {
     const rollChangeInput = document.getElementById('rollChange');
     const oldPasswordInput = document.getElementById('oldPassword');
     const newPasswordInput = document.getElementById('newPassword');
+    // FIXED: Added reference to the new confirm password input
     const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
     const toggleChangePasswordButton = document.getElementById('toggleChangePassword');
-   
-    const loginNetworkBanner = document.getElementById('loginNetworkBanner');
+    const passwordToggles = document.querySelectorAll('.password-toggle');
 
-function updateLoginNetworkBanner() {
-    const isOffline = !navigator.onLine;
-
-    if (loginNetworkBanner) {
-        loginNetworkBanner.style.display = isOffline ? 'block' : 'none';
+    // --- HELPER FUNCTIONS ---
+    /**
+     * FIXED: Replaces alert() with a message in the designated area.
+     * @param {string} message - The message to display.
+     * @param {'error' | 'success'} type - The type of message.
+     */
+    function displayMessage(message, type = 'error') {
+        messageArea.textContent = message;
+        messageArea.className = message ? type : '';
     }
 
-    // Only disable if inputs/buttons are visible (i.e., not in the middle of loading)
-    if (loginButton) loginButton.disabled = isOffline;
-    if (changePasswordBtn) changePasswordBtn.disabled = isOffline;
-}
+    /**
+     * Toggles the loading state of a button and spinner.
+     * @param {boolean} isLoading - True to show spinner, false to show text.
+     * @param {HTMLButtonElement} button - The button element.
+     * @param {HTMLElement} spinner - The spinner element.
+     */
+    function toggleLoadingState(isLoading, button, spinner) {
+        if (!button || !spinner) return;
+        button.disabled = isLoading;
+        const buttonText = button.querySelector('.button-text');
+        buttonText.style.display = isLoading ? 'none' : 'inline-block';
+        spinner.style.display = isLoading ? 'inline-block' : 'none';
+    }
 
-window.addEventListener('online', updateLoginNetworkBanner);
-window.addEventListener('offline', updateLoginNetworkBanner);
-updateLoginNetworkBanner(); // Initial check
-
-
-    // --- AUTO-FILL LOGIN FORM ---
-    // This part runs as soon as the script loads, not necessarily waiting for DOMContentLoaded
-    // but since rollInput and passwordInput are fetched inside DOMContentLoaded, this is fine.
-    const storedRoll = localStorage.getItem('roll');
-    const storedPassword = localStorage.getItem('password'); // Be cautious with storing passwords
-    if (rollInput && storedRoll) rollInput.value = storedRoll;
-    if (passwordInput && storedPassword) passwordInput.value = storedPassword;
-
+    /**
+     * Manages the online/offline network banner and button states.
+     */
+    function updateNetworkStatus() {
+        const isOffline = !navigator.onLine;
+        if (networkBanner) {
+            networkBanner.style.display = isOffline ? 'block' : 'none';
+        }
+        if (loginButton) loginButton.disabled = isOffline;
+        if (changePasswordBtn) changePasswordBtn.disabled = isOffline;
+    }
 
     // --- LOGIN FORM SUBMISSION ---
-    if (loginForm) {
-        loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (loginSpinner) loginSpinner.style.display = 'inline-block';
-            if (loginButton) loginButton.disabled = true;
-            
-            const roll = rollInput.value.trim();
-            const password = passwordInput.value.trim();
+    loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        displayMessage('');
+        toggleLoadingState(true, loginButton, loginSpinner);
 
-            if (!roll || !password) {
-                alert('Please fill in both roll number and password.');
-                if (loginSpinner) loginSpinner.style.display = 'none';
-                if (loginButton) loginButton.disabled = false;
-                return;
-            }
-            
-            try {
-                const { data, error } = await supabase
-                .from('students')
-                .select('roll, passkey') // Only select what's needed
-                .eq('roll', roll)
-                .single(); 
+        const roll = rollInput.value.trim();
+        const password = passwordInput.value.trim();
 
-                if (error && error.code !== 'PGRST116') { 
-                throw error; 
-                }
+        if (!roll || !password) {
+            displayMessage('Please fill in both roll number and password.', 'error');
+            toggleLoadingState(false, loginButton, loginSpinner);
+            return;
+        }
 
-                if (!data || data.passkey !== password) { // **SECURITY RISK: Plain text password comparison**
-                alert('Invalid roll number or password.');
-                } else {
-                localStorage.setItem('roll', roll);
-                localStorage.setItem('password', password); 
-                alert('Login successful! Redirecting to dashboard...');
-                window.location.href = 'dashboard.html';
-                return; 
-                }
-            } catch(err) {
-                console.error('login.js: Login error:', err);
-                alert('An error occurred during login. Please check console for details.');
-            }
-            if (loginSpinner) loginSpinner.style.display = 'none';
-            if (loginButton) loginButton.disabled = false;
-        });
-    } else {
-        console.warn("login.js: Login form 'loginForm' not found in the DOM.");
-    }
-
-    // --- TOGGLE CHANGE PASSWORD FORM ---
-    if (toggleChangePasswordButton && changePasswordForm) {
-        toggleChangePasswordButton.addEventListener('click', function() {
-        changePasswordForm.style.display = (changePasswordForm.style.display === 'none' || changePasswordForm.style.display === '') 
-            ? 'block' 
-            : 'none';
-        });
-    } else {
-        console.warn("login.js: Toggle button or change password form not found.");
-    }
-
-    // --- CHANGE PASSWORD FORM SUBMISSION ---
-    if (changePasswordForm) {
-        changePasswordForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (changeSpinner) changeSpinner.style.display = 'inline-block';
-            if (changePasswordBtn) changePasswordBtn.disabled = true;
-            
-            const roll = rollChangeInput.value.trim();
-            const oldPassword = oldPasswordInput.value.trim();
-            const newPassword = newPasswordInput.value.trim();
-            const confirmNewPassword = confirmNewPasswordInput.value.trim();
-            
-            if (!roll || !oldPassword || !newPassword || !confirmNewPassword) {
-                alert('Please fill in all fields for password change.');
-                if (changeSpinner) changeSpinner.style.display = 'none';
-                if (changePasswordBtn) changePasswordBtn.disabled = false;
-                return;
-            }
-
-            if (newPassword.length < 6) {
-                alert('New password must be at least 6 characters long.');
-                if (changeSpinner) changeSpinner.style.display = 'none';
-                if (changePasswordBtn) changePasswordBtn.disabled = false;
-                return;
-            }
-            
-            if (newPassword !== confirmNewPassword) {
-                alert('New passwords do not match.');
-                if (changeSpinner) changeSpinner.style.display = 'none';
-                if (changePasswordBtn) changePasswordBtn.disabled = false;
-                return;
-            }
-            
-            try {
-                const { data: student, error: fetchError } = await supabase
+        try {
+            const { data, error } = await supabase
                 .from('students')
                 .select('roll, passkey')
                 .eq('roll', roll)
                 .single();
 
-                if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
+            if (error && error.code !== 'PGRST116') throw error;
 
-                if (!student || student.passkey !== oldPassword) { // **SECURITY RISK: Plain text password comparison**
-                alert('Incorrect roll number or old password. Please try again.');
-                } else {
+            if (!data || data.passkey !== password) {
+                displayMessage('Invalid roll number or password.', 'error');
+            } else {
+                localStorage.setItem('roll', roll);
+                // Note: Storing password in localStorage is insecure.
+                // localStorage.setItem('password', password); 
+                displayMessage('Login successful! Redirecting...', 'success');
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            displayMessage('An error occurred during login. Please try again.', 'error');
+        } finally {
+            toggleLoadingState(false, loginButton, loginSpinner);
+        }
+    });
+
+    // --- CHANGE PASSWORD FORM SUBMISSION ---
+    changePasswordForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        displayMessage('');
+        toggleLoadingState(true, changePasswordBtn, changeSpinner);
+
+        const roll = rollChangeInput.value.trim();
+        const oldPassword = oldPasswordInput.value.trim();
+        const newPassword = newPasswordInput.value.trim();
+        const confirmNewPassword = confirmNewPasswordInput.value.trim();
+
+        if (!roll || !oldPassword || !newPassword || !confirmNewPassword) {
+            displayMessage('Please fill in all fields for password change.', 'error');
+            toggleLoadingState(false, changePasswordBtn, changeSpinner);
+            return;
+        }
+        if (newPassword.length < 6) {
+            displayMessage('New password must be at least 6 characters long.', 'error');
+            toggleLoadingState(false, changePasswordBtn, changeSpinner);
+            return;
+        }
+        if (newPassword !== confirmNewPassword) {
+            displayMessage('New passwords do not match.', 'error');
+            toggleLoadingState(false, changePasswordBtn, changeSpinner);
+            return;
+        }
+
+        try {
+            const { data: student, error: fetchError } = await supabase
+                .from('students')
+                .select('roll, passkey')
+                .eq('roll', roll)
+                .single();
+
+            if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
+
+            if (!student || student.passkey !== oldPassword) {
+                displayMessage('Incorrect roll number or old password.', 'error');
+            } else {
                 const { error: updateError } = await supabase
                     .from('students')
-                    .update({ passkey: newPassword }) // **SECURITY RISK: Storing new plain text password**
+                    .update({ passkey: newPassword })
                     .eq('roll', roll);
 
                 if (updateError) throw updateError;
 
-                alert('Password changed successfully!');
-                localStorage.setItem('password', newPassword); 
-                changePasswordForm.reset(); 
-                changePasswordForm.style.display = 'none'; 
-                }
-            } catch(err) {
-                console.error('login.js: Password change error:', err);
-                alert('An error occurred while changing password. Please check console.');
+                displayMessage('Password changed successfully! You can now log in.', 'success');
+                changePasswordForm.reset();
+                setTimeout(() => {
+                    changePasswordForm.style.display = 'none';
+                    displayMessage('');
+                }, 2000);
             }
-            if (changeSpinner) changeSpinner.style.display = 'none';
-            if (changePasswordBtn) changePasswordBtn.disabled = false;
+        } catch (err) {
+            console.error('Password change error:', err);
+            displayMessage('An error occurred while changing the password.', 'error');
+        } finally {
+            toggleLoadingState(false, changePasswordBtn, changeSpinner);
+        }
+    });
+
+    // --- UI EVENT LISTENERS ---
+    toggleChangePasswordButton?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isHidden = changePasswordForm.style.display === 'none';
+        changePasswordForm.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) {
+            changePasswordForm.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+
+    passwordToggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const inputId = toggle.getAttribute('data-for');
+            const passwordInput = document.getElementById(inputId);
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggle.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggle.textContent = '👁️';
+            }
         });
-    } else {
-        console.warn("login.js: Change password form 'changePasswordForm' not found in the DOM.");
-    }
+    });
+
+    // Initial network status check
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    updateNetworkStatus();
 
     console.log("login.js: Script execution finished.");
-}); // End of DOMContentLoaded
+});
