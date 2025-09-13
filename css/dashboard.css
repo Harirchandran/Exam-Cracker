@@ -695,3 +695,60 @@ button:disabled {
     border-left: 4px solid #007bff;
     padding-left: 11px; /* Adjust for border */
 }
+
+/* ========================================= */
+/* Dashboard Footer Styles             */
+/* ========================================= */
+
+.dashboard-footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 50px; /* Pushes footer down from the content above */
+    border-top: 1px solid #e0e0e0; /* A subtle separator line */
+    background-color: #ffffff; /* Or match your dashboard's background */
+}
+
+.dashboard-footer .contact-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.dashboard-footer .contact-links span {
+    font-size: 1rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.dashboard-footer .contact-links a {
+    color: #555; /* Default icon color */
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+}
+
+.dashboard-footer .contact-links i {
+    font-size: 1.8em; /* Controls the size of the logos */
+}
+
+/* Hover Effects for Icons */
+.dashboard-footer .contact-links a:hover {
+    transform: scale(1.15); /* Makes the icon slightly bigger on hover */
+}
+
+.dashboard-footer .contact-links a:hover .fa-linkedin {
+    color: #0A66C2; /* Official LinkedIn Blue */
+}
+
+.dashboard-footer .contact-links a:hover .fa-instagram {
+    color: #E1306C; /* Instagram Pink */
+}
+
+.dashboard-footer p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #777;
+}
